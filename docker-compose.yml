@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  ebm-rerank-api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - API_HOST=0.0.0.0
+      - API_PORT=8000
+      - USE_MOCK_RAGFLOW=true
+      - LOG_LEVEL=INFO
+    volumes:
+      - ./logs:/app/logs
+      - ./data:/app/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Uncomment to add RAGFlow (example)
+  # ragflow:
+  #   image: infiniflow/ragflow:latest
+  #   ports:
+  #     - "9380:9380"
+  #   environment:
+  #     - API_KEY=your-api-key
+  #   volumes:
+  #     - ragflow_data:/ragflow/data
+  #   restart: unless-stopped
+
+# volumes:
+#   ragflow_data:
